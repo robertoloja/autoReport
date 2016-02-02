@@ -1,4 +1,7 @@
 #!/usr/bin/python3
+#TODO: Add comments explaining EVERYTHING.
+#TODO: Table of Contents.
+#TODO: References.
 
 import sys
 import datetime
@@ -42,6 +45,7 @@ def generateTitlePage(document):
     p = document.add_paragraph('\n' * 10)
     p.paragraph_format.line_spacing = 2
 
+    print(arguments['name'][:])
     p.add_run(arguments['name'][0] + '\n')
     p.add_run(arguments['student_number'][0] + '\n\n')
     p.add_run(arguments['course_code'][0] + '\n')
@@ -88,7 +92,7 @@ def generateGenericSection(document, reference):
     return 0
 
 
-def generateBodyAndTableOfContents(document, reference):
+def generateBody(document, reference):
     ''' Generates the body from file reference and table of contents, based on
         the headings (lines starting with '#x') in that file.
 
@@ -96,7 +100,7 @@ def generateBodyAndTableOfContents(document, reference):
         document (Document): A docx.Document object.
 
     Return:
-        int: -1 if error, 0 otherwise.
+        headings_and_subs (list): As ['1. Heading', ['1.1 Sub1', '1.2 Sub2']]
     '''
 
     try:
@@ -109,17 +113,29 @@ def generateBodyAndTableOfContents(document, reference):
 
     heading_count = 0
     subheading_count = 0
+    headings_and_subs = []
+    subheadings = []
 
     for line in lines:
         if line[:2] == '#X':
             heading_count += 1
             subheading_count = 0
 
+            if subheadings:
+                headings_and_subs.append(subheadings)
+
+            headings_and_subs.append(str(heading_count) + line[2:])
+
             document.add_heading('\n' + str(heading_count) + "." +
                     line[2:], 2)
 
+            subheadings = []
+
         elif line[:2] == '#x':
             subheading_count += 1
+
+            subheadings.append(str(heading_count) + '.' + str(subheading_count)
+                    + line[2:])
 
             document.add_heading(str(heading_count) + "." +
                     str(subheading_count) + "." + line[2:], 3)
@@ -133,9 +149,8 @@ def generateBodyAndTableOfContents(document, reference):
 
     document.add_page_break()
 
-    # Body done. NOPE. Also do Table of Contents.
-
-    return 0
+    print(headings_and_subs)
+    return headings_and_subs
 
 
 def parseArguments():
@@ -159,8 +174,8 @@ def parseArguments():
     "directory.\n\n"
 
     "The Body of the report is taken from file 'body.txt' in the present\n"
-    "directory. All lines beginning with '#X' are used as section headings\n"
-    "('#X' is replaced with progressive section numberings). '#x' are sub-\n"
+    "directory. All lines beginning with '##' are used as section headings\n"
+    "('##' is replaced with progressive section numberings). '###' are sub-\n"
     "headings. These will be used in auto-generating the table of contents.\n\n"
 
     "The Conclusions section is taken from file 'conclusion.txt'.\n\n"
@@ -206,6 +221,6 @@ setStyle(document)
 generateTitlePage(document)
 generateGenericSection(document, SUMMARY)
 generateGenericSection(document, INTRODUCTION)
-generateBodyAndTableOfContents(document, BODY)
+generateBody(document, BODY)
 
 document.save(REPORT_FILE)
