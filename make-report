@@ -1,3 +1,5 @@
+#TODO: Body must also generate references.
+#TODO: Table of contents. 
 #!/usr/bin/python3
 import sys
 import datetime
@@ -30,14 +32,18 @@ def generateTitlePage(document):
     Args:
         document (Document): A docx.Document objecy.
     '''
-    titleHead = document.add_heading('\n' * 14 + arguments['title'][0], 1)
+    titleHead = document.add_heading('\n' * 10 + arguments['title'][0], 1)
 
     titleHead.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
 
-    p = document.add_paragraph('\n' * 18)
+    p = document.add_paragraph('\n' * 10)
+    p.paragraph_format.line_spacing = 2
+
     p.add_run(arguments['name'][0] + '\n')
+    p.add_run(arguments['student_number'][0] + '\n\n')
     p.add_run(arguments['course_code'][0] + '\n')
     p.add_run(arguments['date'])
+
     p.paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.RIGHT
     document.add_page_break()
 
@@ -51,6 +57,7 @@ def generateGenericSection(document, reference):
     Return:
         int: -1 if error, 0 otherwise.
     '''
+
     try:
         open_file = open(reference, 'r')
         lines = open_file.readlines()
@@ -76,6 +83,16 @@ def generateGenericSection(document, reference):
 
 
 def generateBodyAndTableOfContents(document, reference):
+    ''' Generates the body from file reference and table of contents, based on
+        the headings (lines starting with '#x') in that file.
+
+    Args:
+        document (Document): A docx.Document object.
+
+    Return:
+        int: -1 if error, 0 otherwise.
+    '''
+
     try:
         open_file = open(reference, 'r')
         lines = open_file.readlines()
@@ -84,13 +101,15 @@ def generateBodyAndTableOfContents(document, reference):
         print("There was a problem opening " + reference + ". Quitting.")
         return -1
 
-    heading_count = 1
+    heading_count = 0
 
     for line in lines:
         if line[:2] == '#x':
+            heading_count += 1
+
             document.add_heading('\n' + str(heading_count) + "." +
                     line[2:], 2)
-            heading_count += 1
+
             p = document.add_paragraph()
             p.paragraph_format.line_spacing = 2
 
@@ -101,6 +120,10 @@ def generateBodyAndTableOfContents(document, reference):
             p.add_run(line)
 
     document.add_page_break()
+
+    # Body done. NOPE
+
+    return 0
 
 
 def parseArguments():
@@ -143,6 +166,9 @@ def parseArguments():
     options.add_argument('-n', required=True, help='Name for Title Page. '
             'Surround by double quotes. E.g. "John Smith".',dest='name',nargs=1)
 
+    options.add_argument('-s', help='Student number.', dest='student_number',
+            nargs=1, default='  ')
+
     options.add_argument('-c', required=True, help='Course Code. E.g. CENG251.',
             nargs=1, dest='course_code')
 
@@ -151,10 +177,10 @@ def parseArguments():
             dest='title', nargs=1)
 
     options.add_argument('-d', help='Optional date. If not supplied, today\'s '
-            'date will be used, in format MONTH DAY, YEAR. Surround by '
+            'date will be used, in format Month Day, Year. Surround by '
             'double quotes. E.g. "12/31/2000".', dest='date', nargs=1,
             default=datetime.date.today().strftime("%B %d, %Y").replace(" 0",
-                " "))
+            " "))
 
     return vars(options.parse_args())
 
