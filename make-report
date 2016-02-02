@@ -5,10 +5,31 @@ import argparse
 import docx
 
 # Constants
-REPORT_FILE = "report"
-FONT = "Symbola"
+REPORT_FILE  = "report.docx"
+SUMMARY      = "summary.txt"
+INTRODUCTION = "introduction.txt"
+BODY         = "body.txt"
+CONCLUSION   = "conclusion.txt"
+APPENDICES   = "appendices.txt"
+FONT         = "Symbola"
 
-def generateTitlePage():
+
+def setStyle(document):
+    '''Sets document style'''
+    styles = document.styles
+    styles['Normal'].font.size = docx.shared.Pt(12)
+
+    for x in ['Normal', 'Heading 1', 'Heading 2']:
+        styles[x].font.name = FONT
+        styles[x].font.color.rgb = docx.shared.RGBColor(0x00,0x00,0x00)
+
+
+def generateTitlePage(document):
+    ''' Generates title page from arguments given at program invocation.
+
+    Args:
+        document (Document): A docx.Document objecy.
+    '''
     titleHead = document.add_heading('\n' * 14 + arguments['title'][0], 1)
 
     titleHead.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
@@ -20,11 +41,76 @@ def generateTitlePage():
     p.paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.RIGHT
     document.add_page_break()
 
-def generateIntro():
-    intro_file = open('introduction.txt', 'r')
-    lines = intro_file.readlines()
+
+def generateGenericSection(document, reference):
+    ''' Generates an summary, introduction, or conclusion from file reference.
+
+    Args:
+        document (Document): A docx.Document object.
+
+    Return:
+        int: -1 if error, 0 otherwise.
+    '''
+    try:
+        open_file = open(reference, 'r')
+        lines = open_file.readlines()
+
+    except Exception:
+        print("There was a problem opening " + reference + ". Quitting.")
+        return -1
+
+    section_title = reference[:-4].capitalize()
+
+    document.add_heading('\n' * 3 + section_title + '\n' * 2, 2)
+
+    p = document.add_paragraph()
+    p.paragraph_format.line_spacing = 2
+
+    for line in lines:
+        p.add_run(line)
+
+    document.add_page_break()
+    print(section_title + ": Done.")
+
+    return 0
+
+
+def generateBodyAndTableOfContents(document, reference):
+    try:
+        open_file = open(reference, 'r')
+        lines = open_file.readlines()
+
+    except Exception:
+        print("There was a problem opening " + reference + ". Quitting.")
+        return -1
+
+    heading_count = 1
+
+    for line in lines:
+        if line[:2] == '#x':
+            document.add_heading('\n' + str(heading_count) + "." +
+                    line[2:], 2)
+            heading_count += 1
+            p = document.add_paragraph()
+            p.paragraph_format.line_spacing = 2
+
+        elif not line:
+            p.add_run('\n')
+
+        else:
+            p.add_run(line)
+
+    document.add_page_break()
+
 
 def parseArguments():
+    ''' Parses the arguments given at program invocation.
+
+    Returns:
+        arguments (dict): Contains 'name', 'title', 'course_code', 'date'.
+
+    '''
+
     description = ("\n   Generate an engineering report in .docx format.\n\n"
 
     "Title page is generated from arguments passed at program invocation,\n"
@@ -72,14 +158,16 @@ def parseArguments():
 
     return vars(options.parse_args())
 
+
 arguments = parseArguments()
 
 document = docx.Document()
-styles = document.styles
-styles['Normal'].font.name = FONT
-styles['Normal'].font.color.rgb = docx.shared.RGBColor(0x00,0x00,0x00)
-styles['Normal'].font.size = docx.shared.Pt(12)
-styles['Heading 1'].font.color.rgb = docx.shared.RGBColor(0x00,0x00,0x00)
 
-generateTitlePage()
-document.save('thing.docx')
+setStyle(document)
+
+generateTitlePage(document)
+generateGenericSection(document, SUMMARY)
+generateGenericSection(document, INTRODUCTION)
+generateBodyAndTableOfContents(document, BODY)
+
+document.save(REPORT_FILE)
