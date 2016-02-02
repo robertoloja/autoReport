@@ -44,3 +44,8 @@ exists in the current directory.
 |  -n  |      Name       |    Yes   |
 |  -s  | Student Number  |    No    |  Default is blank.
 |  -d  |      Date       |    No    |  Default is today's date.
+
+## Requirements
+
+- Python3.4 (Any version of Python 3 should be fine)
+- [python-docx](https://github.com/python-openxml/python-docx)
