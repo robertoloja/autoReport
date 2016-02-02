@@ -1,3 +1,0 @@
-Each line in this file is a paragraph in the final report. Thus, bla bla and thins and such, lines will run very long because it's a whole entire paragraph.
-
-And then here's another paragraph. Nobody knows why, since this isn't really an introduction to anything, it's just a bunch of nonsense and such.
