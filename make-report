@@ -1,7 +1,13 @@
+#!/usr/bin/python3
 import sys
+import datetime
 import argparse
+import docx
 
- # Command line argument parsing.
+# Constants
+REPORT_FILE = "report"
+
+# Command line argument parsing.
 description = '''Generate an engineering report in .odt format.
 
 The Title page is generated from arguments passed at program invocation, as
@@ -41,8 +47,19 @@ options.add_argument('-t', required=True, help='Title of the report. Surround \
         by double quotes. E.g. "Implementing getopt()".', dest='title', nargs=1)
 
 options.add_argument('-d', help='Optional date. If not supplied, today\'s date \
-        will be used, in format MONTH DAY(st|nd|rd|th), YEAR). Surround by \
-        double quotes. E.g. "12/31/2000".', dest='date', nargs=1)
+        will be used, in format MONTH DAY, YEAR). Surround by \
+        double quotes. E.g. "12/31/2000".', dest='date', nargs=1,
+        default=datetime.date.today().strftime("%B %d, %Y").replace(" 0", " "))
 
 arguments = vars(options.parse_args())
-print(arguments)
+
+
+def generateTitlePage():
+    arguments
+
+
+def generateIntro():
+    intro_file = open('introduction.txt', 'r')
+    lines = intro_file.readlines()
+
+generateIntro()

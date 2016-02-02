@@ -1,0 +1,5 @@
+This is a text file
+
+With multiple lines
+
+#x This line is a heading
