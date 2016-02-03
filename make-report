@@ -1,21 +1,21 @@
 #!/usr/bin/python3
-#TODO: Add comments explaining EVERYTHING.
-#TODO: Table of Contents.
-#TODO: References.
+# TODO: Add comments explaining EVERYTHING.
+# TODO: Table of Contents.
+# TODO: References.
 
-import sys
 import datetime
 import argparse
 import docx
 
+
 # Constants
-REPORT_FILE  = "report.docx"
-SUMMARY      = "summary.txt"
+REPORT_FILE = "report.docx"
+SUMMARY = "summary.txt"
 INTRODUCTION = "introduction.txt"
-BODY         = "body.txt"
-CONCLUSION   = "conclusion.txt"
-APPENDICES   = "appendices.txt"
-FONT         = "Symbola"
+BODY = "body.txt"
+CONCLUSION = "conclusion.txt"
+APPENDICES = "appendices.txt"
+FONT = "Symbola"
 
 
 def setStyle(document):
@@ -29,7 +29,7 @@ def setStyle(document):
 
     for x in ['Normal', 'Heading 1', 'Heading 2', 'Heading 3']:
         styles[x].font.name = FONT
-        styles[x].font.color.rgb = docx.shared.RGBColor(0x00,0x00,0x00)
+        styles[x].font.color.rgb = docx.shared.RGBColor(0x00, 0x00, 0x00)
 
 
 def generateTitlePage(document):
@@ -126,18 +126,19 @@ def generateBody(document, reference):
             headings_and_subs.append(str(heading_count) + line[2:])
 
             document.add_heading('\n' + str(heading_count) + "." +
-                    line[2:], 2)
+                                 line[2:], 2)
 
             subheadings = []
 
         elif line[:3] == '###':
             subheading_count += 1
 
-            subheadings.append(str(heading_count) + '.' + str(subheading_count)
-                    + line[3:])
+            subheadings.append(str(heading_count) + '.' +
+                               str(subheading_count) + line[3:])
 
             document.add_heading("\t" + str(heading_count) + "." +
-                    str(subheading_count) + "." + line[3:], 3)
+                                 str(subheading_count) + "." +
+                                 line[3:], 3)
 
         elif line != '\n':
             p = document.add_paragraph()
@@ -159,53 +160,57 @@ def parseArguments():
 
     '''
 
-    description = ("\n   Generate an engineering report in .docx format.\n\n"
+    description = (
+        "\n   Generate an engineering report in .docx format.\n\n"
 
-    "Title page is generated from arguments passed at program invocation,\n"
-    "as explained below.\n\n"
+        "Title page is generated from arguments passed at program invocation,"
+        "\nas explained below.\n\n"
 
-    "Summary is taken from file 'summary.txt' in the present directory.\n\n"
+        "Summary is taken from file 'summary.txt' in the present directory.\n"
 
-    "Table of Contents is auto-generated.\n\n"
+        "\nTable of Contents is auto-generated.\n\n"
 
-    "Introduction is taken from the file 'introduction.txt' in the present\n"
-    "directory.\n\n"
+        "Introduction is taken from the file 'introduction.txt' in present"
+        "\ndirectory.\n\n"
 
-    "The Body of the report is taken from file 'body.txt' in the present\n"
-    "directory. All lines beginning with '##' are used as section headings\n"
-    "('##' is replaced with progressive section numberings). '###' are sub-\n"
-    "headings. These will be used in auto-generating the table of contents.\n\n"
+        "The Body of the report is taken from file 'body.txt' in the present"
+        "\ndirectory. All lines beginning with '##' are used as section\n"
+        "headings ('##' is replaced with progressive section numberings).\n"
+        "'###' are sub-headings. These will be used in auto-generating the"
+        "\ntable of contents.\n\n"
 
-    "The Conclusions section is taken from file 'conclusion.txt'.\n\n"
+        "The Conclusions section is taken from file 'conclusion.txt'.\n\n"
 
-    "The optional References section will be generated from 'body.txt' from\n"
-    "any use of '_x*' in the text, where 'x' is a number. The actual\n"
-    "references should then be included at the end of 'body.txt'.\n\n"
+        "The optional References section will be generated from 'body.txt'"
+        "\nfrom any use of '_x*' in the text, where 'x' is a number. The"
+        "\nactual references should be included at the end of 'body.txt'.\n\n"
 
-    "The optional Appendices section are taken from 'appendices.txt' if it\n"
-    "exists in the current directory.\n")
+        "The optional Appendices section are taken from 'appendices.txt' if"
+        "\nit exists in the current directory.\n")
 
     options = argparse.ArgumentParser(description=description,
-                formatter_class=argparse.RawTextHelpFormatter)
+                                      formatter_class=argparse.
+                                      RawTextHelpFormatter)
 
     options.add_argument('-n', required=True, help='Name for Title Page. '
-            'Surround by double quotes. E.g. "John Smith".',dest='name',nargs=1)
+                         'Surround by double quotes. E.g. "John Smith".',
+                         dest='name', nargs=1)
 
     options.add_argument('-s', help='Student number.', dest='student_number',
-            nargs=1, default='  ')
+                         nargs=1, default='  ')
 
-    options.add_argument('-c', required=True, help='Course Code. E.g. CENG251.',
-            nargs=1, dest='course_code')
+    options.add_argument('-c', required=True, help='Course Code. Eg CENG251.',
+                         nargs=1, dest='course_code')
 
     options.add_argument('-t', required=True, help='Title of the report. '
-            'Surround by double quotes. E.g. "Implementing getopt()".',
-            dest='title', nargs=1)
+                         'Surround by double quotes. E.g. "Implementing '
+                         'getopt()".', dest='title', nargs=1)
 
-    options.add_argument('-d', help='Optional date. If not supplied, today\'s '
-            'date will be used, in format Month Day, Year. Surround by '
-            'double quotes. E.g. "12/31/2000".', dest='date', nargs=1,
-            default=datetime.date.today().strftime("%B %d, %Y").replace(" 0",
-            " "))
+    options.add_argument('-d', help='Optional date. If missing, today\'s '
+                         'date will be used, in format Month Day, Year.'
+                         'Surround by double quotes. E.g. "12/31/2000".',
+                         dest='date', nargs=1, default=datetime.date.today().
+                         strftime("%B %d, %Y").replace(" 0", " "))
 
     return vars(options.parse_args())
 
