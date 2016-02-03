@@ -38,14 +38,13 @@ def generateTitlePage(document):
     Args:
         document (Document): A docx.Document objecy.
     '''
-    titleHead = document.add_heading('\n' * 10 + arguments['title'][0], 1)
+    titleHead = document.add_heading('\n' * 12 + arguments['title'][0], 1)
 
     titleHead.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.CENTER
 
-    p = document.add_paragraph('\n' * 10)
-    p.paragraph_format.line_spacing = 2
+    p = document.add_paragraph('\n' * 14)
+    p.paragraph_format.line_spacing = 1.5
 
-    print(arguments['name'][:])
     p.add_run(arguments['name'][0] + '\n')
     p.add_run(arguments['student_number'][0] + '\n\n')
     p.add_run(arguments['course_code'][0] + '\n')
@@ -100,7 +99,7 @@ def generateBody(document, reference):
         document (Document): A docx.Document object.
 
     Return:
-        headings_and_subs (list): As ['1. Heading', ['1.1 Sub1', '1.2 Sub2']]
+        headings_and_subs (list): As ['1. Heading', ['1.1 Sub1', '1.2 Sub2']].
     '''
 
     try:
@@ -117,7 +116,7 @@ def generateBody(document, reference):
     subheadings = []
 
     for line in lines:
-        if line[:2] == '#X':
+        if line[:3] == '## ':
             heading_count += 1
             subheading_count = 0
 
@@ -131,14 +130,14 @@ def generateBody(document, reference):
 
             subheadings = []
 
-        elif line[:2] == '#x':
+        elif line[:3] == '###':
             subheading_count += 1
 
             subheadings.append(str(heading_count) + '.' + str(subheading_count)
-                    + line[2:])
+                    + line[3:])
 
-            document.add_heading(str(heading_count) + "." +
-                    str(subheading_count) + "." + line[2:], 3)
+            document.add_heading("\t" + str(heading_count) + "." +
+                    str(subheading_count) + "." + line[3:], 3)
 
         elif line != '\n':
             p = document.add_paragraph()
@@ -149,7 +148,6 @@ def generateBody(document, reference):
 
     document.add_page_break()
 
-    print(headings_and_subs)
     return headings_and_subs
 
 
@@ -221,6 +219,6 @@ setStyle(document)
 generateTitlePage(document)
 generateGenericSection(document, SUMMARY)
 generateGenericSection(document, INTRODUCTION)
-generateBody(document, BODY)
+headings_and_subs = generateBody(document, BODY)
 
 document.save(REPORT_FILE)
