@@ -1,3 +1,5 @@
+-Project on-hold due to school work.
+
 # autoReport
 ## Summary
 This program generates an engineering report in .docx format. That is, 
@@ -25,6 +27,7 @@ the line '### Sampling', if it comes after '## Methods' and before another
 heading or subheading, becomes '2.1 Sampling'. There may be paragraph text
 between headings and subheadings; this does not affect the count.
 
+(The following is not yet implemented.)
 The optional References section is also generated from 'body.txt'. In that file,
 any use of '_*' in the text will create a footnote and reference. The reference
 itself should then be included at the end of 'body.txt', in the same order as
