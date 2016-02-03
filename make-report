@@ -51,7 +51,6 @@ def generateTitlePage(document):
     p.add_run(arguments['date'])
 
     p.paragraph_format.alignment = docx.enum.text.WD_ALIGN_PARAGRAPH.RIGHT
-    document.add_page_break()
 
 
 def generateGenericSection(document, reference):
@@ -62,6 +61,8 @@ def generateGenericSection(document, reference):
 
     Return:
         int: -1 if error, 0 otherwise.
+        table_of_contents (Paragraph): If the section just generated was the
+                                       summary.
     '''
 
     try:
@@ -71,6 +72,8 @@ def generateGenericSection(document, reference):
     except Exception:
         print("There was a problem opening " + reference + ". Quitting.")
         return -1
+
+    document.add_page_break()
 
     section_title = reference[:-4].capitalize()
 
@@ -85,8 +88,14 @@ def generateGenericSection(document, reference):
 
             p.add_run(line)
 
-    document.add_page_break()
     print(section_title + ": Done.")
+
+    if 'summary' in reference:
+        document.add_page_break()
+        document.add_heading("\n\n\tTable of Contents\n", 2)
+        table_of_contents = document.add_paragraph()
+
+        return table_of_contents
 
     return 0
 
@@ -100,6 +109,7 @@ def generateBody(document, reference):
 
     Return:
         headings_and_subs (list): As ['1. Heading', ['1.1 Sub1', '1.2 Sub2']].
+        int: -1 if there is a problem opening the file.
     '''
 
     try:
@@ -109,6 +119,8 @@ def generateBody(document, reference):
     except Exception:
         print("There was a problem opening " + reference + ". Quitting.")
         return -1
+
+    document.add_page_break()
 
     heading_count = 0
     subheading_count = 0
@@ -123,9 +135,10 @@ def generateBody(document, reference):
             if subheadings:
                 headings_and_subs.append(subheadings)
 
-            headings_and_subs.append(str(heading_count) + line[2:])
+            headings_and_subs.append('\n' + str(heading_count) + '.' + '\t' +
+                                     line[2:])
 
-            document.add_heading('\n' + str(heading_count) + "." +
+            document.add_heading('\n' + str(heading_count) + '.' +
                                  line[2:], 2)
 
             subheadings = []
@@ -133,11 +146,11 @@ def generateBody(document, reference):
         elif line[:3] == '###':
             subheading_count += 1
 
-            subheadings.append(str(heading_count) + '.' +
-                               str(subheading_count) + line[3:])
+            subheadings.append('\t\t' + str(heading_count) + '.' +
+                               str(subheading_count) + '\t' + line[3:])
 
-            document.add_heading("\t" + str(heading_count) + "." +
-                                 str(subheading_count) + "." +
+            document.add_heading('\t' + str(heading_count) + '.' +
+                                 str(subheading_count) + '.' +
                                  line[3:], 3)
 
         elif line != '\n':
@@ -147,9 +160,14 @@ def generateBody(document, reference):
             p.paragraph_format.space_after = docx.shared.Pt(6)
             p.add_run(line)
 
-    document.add_page_break()
-
     return headings_and_subs
+
+
+def generateTableOfContents(headings_and_subs, table_of_contents):
+    table_of_contents.paragraph_format.line_spacing = 2
+
+    for heading in headings_and_subs:
+        table_of_contents.add_run(heading)
 
 
 def parseArguments():
@@ -222,8 +240,15 @@ document = docx.Document()
 setStyle(document)
 
 generateTitlePage(document)
-generateGenericSection(document, SUMMARY)
+
+table_of_contents = generateGenericSection(document, SUMMARY)
+
 generateGenericSection(document, INTRODUCTION)
+
 headings_and_subs = generateBody(document, BODY)
+
+generateTableOfContents(headings_and_subs, table_of_contents)
+
+generateGenericSection(document, CONCLUSION)
 
 document.save(REPORT_FILE)
