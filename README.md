@@ -34,8 +34,9 @@ itself should then be included at the end of 'body.txt', in the same order as
 they appear in the text. When the References section is generated, these will
 be arranged in alphabetical order by Author.
 
-The optional Appendices section are taken from 'appendices.txt' if it
-exists in the current directory.
+The optional Appendices sections are taken from 'appendices.txt' if any
+exists in the current directory. They are progressively named 'Appendix A', 
+'Appendix B', etc.
 
 
 ## Arguments
