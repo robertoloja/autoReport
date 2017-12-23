@@ -2,7 +2,7 @@
 
 # autoReport
 ## Summary
-This program generates an engineering report in .docx format. That is, 
+This program generates a report in .docx format. That is, 
 given a number of raw text files and some shell arguments, it assembles
 a nicely formated .docx with an auto-generated table of contents and 
 references section.
