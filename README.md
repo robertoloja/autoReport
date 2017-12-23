@@ -1,4 +1,4 @@
--Project on-hold due to school work.
+-Project on-hold due to uselessness.
 
 # autoReport
 ## Summary
