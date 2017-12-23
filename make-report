@@ -179,7 +179,7 @@ def parseArguments():
     '''
 
     description = (
-        "\n   Generate an engineering report in .docx format.\n\n"
+        "\n   Generate a report in .docx format.\n\n"
 
         "Title page is generated from arguments passed at program invocation,"
         "\nas explained below.\n\n"
