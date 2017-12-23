@@ -22,7 +22,7 @@ def setStyle(document):
     '''Sets document style
 
     Args:
-        document (Document): A docx.Document objecy.
+        document (Document): A docx.Document object.
     '''
     styles = document.styles
     styles['Normal'].font.size = docx.shared.Pt(12)
@@ -36,7 +36,7 @@ def generateTitlePage(document):
     ''' Generates title page from arguments given at program invocation.
 
     Args:
-        document (Document): A docx.Document objecy.
+        document (Document): A docx.Document object.
     '''
     titleHead = document.add_heading('\n' * 12 + arguments['title'][0], 1)
 
